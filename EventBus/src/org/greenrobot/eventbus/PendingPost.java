@@ -18,11 +18,25 @@ package org.greenrobot.eventbus;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 封装等待发送事件Api的类，类似Handler的Message对象，内部有对象池和事件
+ */
 final class PendingPost {
+    /**
+     *
+     */
     private final static List<PendingPost> pendingPostPool = new ArrayList<PendingPost>();
-
+    /**
+     * 事件
+     */
     Object event;
+    /**
+     * 订阅者信息
+     */
     Subscription subscription;
+    /**
+     * 下一个要发送的信息
+     */
     PendingPost next;
 
     private PendingPost(Object event, Subscription subscription) {
@@ -30,11 +44,18 @@ final class PendingPost {
         this.subscription = subscription;
     }
 
+    /**
+     * 从池子中获取一个事件发送类对象
+     *
+     * @param subscription 订阅信息
+     * @param event        事件
+     */
     static PendingPost obtainPendingPost(Subscription subscription, Object event) {
         synchronized (pendingPostPool) {
             int size = pendingPostPool.size();
             if (size > 0) {
                 PendingPost pendingPost = pendingPostPool.remove(size - 1);
+                //对字段赋值
                 pendingPost.event = event;
                 pendingPost.subscription = subscription;
                 pendingPost.next = null;
@@ -44,16 +65,22 @@ final class PendingPost {
         return new PendingPost(event, subscription);
     }
 
+    /**
+     * 回收
+     *
+     * @param pendingPost 事件发送类
+     */
     static void releasePendingPost(PendingPost pendingPost) {
+        //重置字段
         pendingPost.event = null;
         pendingPost.subscription = null;
         pendingPost.next = null;
+        //将对象放回对象池
         synchronized (pendingPostPool) {
-            // Don't let the pool grow indefinitely
+            //这里对池子大小做限制，不然会不断让池容量增长
             if (pendingPostPool.size() < 10000) {
                 pendingPostPool.add(pendingPost);
             }
         }
     }
-
 }

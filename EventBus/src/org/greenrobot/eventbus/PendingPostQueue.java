@@ -16,18 +16,34 @@
 
 package org.greenrobot.eventbus;
 
+/**
+ * 发送事件队列，是一个链表
+ */
 final class PendingPostQueue {
+    /**
+     * 队头消息
+     */
     private PendingPost head;
+    /**
+     * 队尾
+     */
     private PendingPost tail;
 
+    /**
+     * 入队
+     *
+     * @param pendingPost 下一个事件对象
+     */
     synchronized void enqueue(PendingPost pendingPost) {
         if (pendingPost == null) {
             throw new NullPointerException("null cannot be enqueued");
         }
+        //将事件绑定在，当前最后一个事件对象的next
         if (tail != null) {
             tail.next = pendingPost;
             tail = pendingPost;
         } else if (head == null) {
+            //第一次，队头为空，赋值
             head = tail = pendingPost;
         } else {
             throw new IllegalStateException("Head present, but no tail");
@@ -35,6 +51,9 @@ final class PendingPostQueue {
         notifyAll();
     }
 
+    /**
+     * 获取下一个事件对象
+     */
     synchronized PendingPost poll() {
         PendingPost pendingPost = head;
         if (head != null) {
@@ -52,5 +71,4 @@ final class PendingPostQueue {
         }
         return poll();
     }
-
 }

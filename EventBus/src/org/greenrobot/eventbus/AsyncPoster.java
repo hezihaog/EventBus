@@ -17,12 +17,12 @@ package org.greenrobot.eventbus;
 
 
 /**
- * Posts events in background.
- * 
- * @author Markus
+ * 子线程执行器，实现了Runnable,、Poster接口
  */
 class AsyncPoster implements Runnable, Poster {
-
+    /**
+     * 消息队列
+     */
     private final PendingPostQueue queue;
     private final EventBus eventBus;
 
@@ -31,19 +31,24 @@ class AsyncPoster implements Runnable, Poster {
         queue = new PendingPostQueue();
     }
 
+    @Override
     public void enqueue(Subscription subscription, Object event) {
+        //入队，获取一个缓存的PendingPost消息对象，重新初始化
         PendingPost pendingPost = PendingPost.obtainPendingPost(subscription, event);
+        //将消息入队
         queue.enqueue(pendingPost);
+        //获取执行器执行
         eventBus.getExecutorService().execute(this);
     }
 
     @Override
     public void run() {
+        //获取一个PendingPost消息
         PendingPost pendingPost = queue.poll();
-        if(pendingPost == null) {
+        if (pendingPost == null) {
             throw new IllegalStateException("No pending post available");
         }
+        //反射调用订阅者的订阅方法
         eventBus.invokeSubscriber(pendingPost);
     }
-
 }

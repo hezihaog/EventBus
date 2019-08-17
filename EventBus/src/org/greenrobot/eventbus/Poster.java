@@ -16,17 +16,14 @@
 package org.greenrobot.eventbus;
 
 /**
- * Posts events.
- *
- * @author William Ferguson
+ * 事件发送器
  */
 interface Poster {
-
     /**
-     * Enqueue an event to be posted for a particular subscription.
+     * 入队一个事件发送任务
      *
-     * @param subscription Subscription which will receive the event.
-     * @param event        Event that will be posted to subscribers.
+     * @param subscription 订阅信息
+     * @param event        事件对象
      */
     void enqueue(Subscription subscription, Object event);
 }

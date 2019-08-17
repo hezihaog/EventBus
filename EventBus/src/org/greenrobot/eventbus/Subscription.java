@@ -15,12 +15,14 @@
  */
 package org.greenrobot.eventbus;
 
+/**
+ * 订阅信息类，包裹订阅者的订阅方法，以及一个active字段来做比较使用
+ */
 final class Subscription {
     final Object subscriber;
     final SubscriberMethod subscriberMethod;
     /**
-     * Becomes false as soon as {@link EventBus#unregister(Object)} is called, which is checked by queued event delivery
-     * {@link EventBus#invokeSubscriber(PendingPost)} to prevent race conditions.
+     * 是否取消订阅了，取消事件的所有订阅时，会置为false
      */
     volatile boolean active;
 
