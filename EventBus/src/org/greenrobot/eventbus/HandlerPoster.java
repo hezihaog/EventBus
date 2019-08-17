@@ -50,7 +50,7 @@ public class HandlerPoster extends Handler implements Poster {
      */
     @Override
     public void enqueue(Subscription subscription, Object event) {
-        //获取一个等待发送的消息类对象
+        //获取一个等待发送的消息
         PendingPost pendingPost = PendingPost.obtainPendingPost(subscription, event);
         synchronized (this) {
             //消息入队
@@ -71,7 +71,7 @@ public class HandlerPoster extends Handler implements Poster {
         boolean rescheduled = false;
         try {
             long started = SystemClock.uptimeMillis();
-            //死循环，从队列中获取下一个事件
+            //死循环，从队列中获取下一个消息
             while (true) {
                 PendingPost pendingPost = queue.poll();
                 if (pendingPost == null) {
@@ -88,7 +88,7 @@ public class HandlerPoster extends Handler implements Poster {
                 //反射调用订阅者的订阅方法，这里在Handler中回调，所以在主线程
                 eventBus.invokeSubscriber(pendingPost);
                 long timeInMethod = SystemClock.uptimeMillis() - started;
-                //继续循环发送
+                //继续循环发送消息
                 if (timeInMethod >= maxMillisInsideHandleMessage) {
                     if (!sendMessage(obtainMessage())) {
                         throw new EventBusException("Could not send handler message");

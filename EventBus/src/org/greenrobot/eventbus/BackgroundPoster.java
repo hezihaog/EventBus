@@ -27,6 +27,9 @@ final class BackgroundPoster implements Runnable, Poster {
     private final PendingPostQueue queue;
     private final EventBus eventBus;
 
+    /**
+     * 这个变量为了让线程池只能单线程执行
+     */
     private volatile boolean executorRunning;
 
     BackgroundPoster(EventBus eventBus) {
@@ -38,6 +41,7 @@ final class BackgroundPoster implements Runnable, Poster {
     public void enqueue(Subscription subscription, Object event) {
         //获取一个消息，并将任务重新初始化
         PendingPost pendingPost = PendingPost.obtainPendingPost(subscription, event);
+        //加synchronized保证单线程执行
         synchronized (this) {
             //任务入队
             queue.enqueue(pendingPost);
@@ -56,9 +60,10 @@ final class BackgroundPoster implements Runnable, Poster {
             try {
                 //一直死循环执行
                 while (true) {
-                    //获取下一个消息
+                    //获取下一个消息，并设定1秒阻塞
                     PendingPost pendingPost = queue.poll(1000);
                     if (pendingPost == null) {
+                        //加synchronized保证单线程执行，这里也加是因为要保证executorRunning的值不出错
                         synchronized (this) {
                             //同样要双重检查
                             pendingPost = queue.poll();

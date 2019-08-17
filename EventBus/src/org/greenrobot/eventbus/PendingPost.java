@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 封装等待发送事件Api的类，类似Handler的Message对象，内部有对象池和事件
+ * 封装等待发送事件Api的类，相当于一个消息，类似Handler的Message对象，内部有对象池和事件
  */
 final class PendingPost {
     /**
-     *
+     * 队列
      */
     private final static List<PendingPost> pendingPostPool = new ArrayList<PendingPost>();
     /**
@@ -45,7 +45,7 @@ final class PendingPost {
     }
 
     /**
-     * 从池子中获取一个事件发送类对象
+     * 从池子中获取一个消息
      *
      * @param subscription 订阅信息
      * @param event        事件
@@ -68,7 +68,7 @@ final class PendingPost {
     /**
      * 回收
      *
-     * @param pendingPost 事件发送类
+     * @param pendingPost 包裹了订阅者信息的消息
      */
     static void releasePendingPost(PendingPost pendingPost) {
         //重置字段

@@ -17,7 +17,7 @@
 package org.greenrobot.eventbus;
 
 /**
- * 发送事件队列，是一个链表
+ * 发送事件队列，维护一个消息对象链表
  */
 final class PendingPostQueue {
     /**
@@ -32,7 +32,7 @@ final class PendingPostQueue {
     /**
      * 入队
      *
-     * @param pendingPost 下一个事件对象
+     * @param pendingPost 下一个消息
      */
     synchronized void enqueue(PendingPost pendingPost) {
         if (pendingPost == null) {
@@ -52,7 +52,7 @@ final class PendingPostQueue {
     }
 
     /**
-     * 获取下一个事件对象
+     * 获取下一个消息
      */
     synchronized PendingPost poll() {
         PendingPost pendingPost = head;
