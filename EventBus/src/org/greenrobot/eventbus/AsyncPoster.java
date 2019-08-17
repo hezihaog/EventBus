@@ -17,7 +17,7 @@ package org.greenrobot.eventbus;
 
 
 /**
- * 子线程执行器，实现了Runnable,、Poster接口
+ * 子线程并发执行器，实现了Runnable,、Poster接口
  */
 class AsyncPoster implements Runnable, Poster {
     /**

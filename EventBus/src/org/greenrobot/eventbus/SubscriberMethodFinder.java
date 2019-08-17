@@ -52,6 +52,11 @@ class SubscriberMethodFinder {
         this.ignoreGeneratedIndex = ignoreGeneratedIndex;
     }
 
+    /**
+     * 查找订阅者的订阅方法，将订阅信息封装在SubscriberMethod类中，多个方法，所以返回值为一个List集合
+     *
+     * @param subscriberClass 订阅者Class
+     */
     List<SubscriberMethod> findSubscriberMethods(Class<?> subscriberClass) {
         //先从缓存中查找，有则直接使用
         List<SubscriberMethod> subscriberMethods = METHOD_CACHE.get(subscriberClass);
@@ -82,7 +87,7 @@ class SubscriberMethodFinder {
      * @param subscriberClass 订阅者Class
      */
     private List<SubscriberMethod> findUsingInfo(Class<?> subscriberClass) {
-        //获取一个查找创建实体
+        //获取当前线程的查找状态
         FindState findState = prepareFindState();
         //初始化一些值
         findState.initForSubscriber(subscriberClass);
@@ -312,6 +317,9 @@ class SubscriberMethodFinder {
             }
         }
 
+        /**
+         * 配置父类Class信息，会自动忽略系统类来提高性能
+         */
         void moveToSuperclass() {
             if (skipSuperClasses) {
                 clazz = null;
@@ -325,5 +333,4 @@ class SubscriberMethodFinder {
             }
         }
     }
-
 }

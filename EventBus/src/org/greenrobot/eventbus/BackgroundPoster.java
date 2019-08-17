@@ -18,7 +18,7 @@ package org.greenrobot.eventbus;
 import java.util.logging.Level;
 
 /**
- * 子线程回调事件订阅的发送器，实现了Runnable和Poster接口
+ * 子线程串行回调事件订阅的发送器，实现了Runnable和Poster接口
  */
 final class BackgroundPoster implements Runnable, Poster {
     /**

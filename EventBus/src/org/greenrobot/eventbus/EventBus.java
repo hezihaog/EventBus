@@ -91,7 +91,7 @@ public class EventBus {
     private final Logger logger;
 
     /**
-     * Convenience singleton for apps using a process-wide EventBus instance.
+     * Double Check 方式单例
      */
     public static EventBus getDefault() {
         EventBus instance = defaultInstance;
@@ -106,6 +106,9 @@ public class EventBus {
         return instance;
     }
 
+    /**
+     * 自定义配置EventBus实例
+     */
     public static EventBusBuilder builder() {
         return new EventBusBuilder();
     }
@@ -442,7 +445,7 @@ public class EventBus {
     }
 
     /**
-     * 发送单个事件
+     * 发送一个事件
      *
      * @param event        事件对象
      * @param postingState 发送状态
@@ -456,9 +459,11 @@ public class EventBus {
             int countTypes = eventTypes.size();
             for (int h = 0; h < countTypes; h++) {
                 Class<?> clazz = eventTypes.get(h);
+                //发送事件
                 subscriptionFound |= postSingleEventForEventType(event, postingState, clazz);
             }
         } else {
+            //发送事件
             subscriptionFound = postSingleEventForEventType(event, postingState, eventClass);
         }
         //处理没有订阅者的情况
@@ -519,7 +524,7 @@ public class EventBus {
     /**
      * 发送事件到订阅者
      *
-     * @param subscription 订阅嘻嘻
+     * @param subscription 订阅信息
      * @param event        事件类型
      * @param isMainThread 当时是否在主线程
      */
