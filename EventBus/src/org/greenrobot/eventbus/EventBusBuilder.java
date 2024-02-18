@@ -24,12 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * EventBus实例自定义Builder配置
  */
 public class EventBusBuilder {
-    private final static ExecutorService DEFAULT_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
+    private final static ExecutorService DEFAULT_EXECUTOR_SERVICE = createExecutorService();
 
     boolean logSubscriberExceptions = true;
     boolean logNoSubscriberMessages = true;
@@ -46,6 +48,38 @@ public class EventBusBuilder {
     MainThreadSupport mainThreadSupport;
 
     EventBusBuilder() {
+    }
+
+    /**
+     * 创建线程池
+     */
+    private static ExecutorService createExecutorService() {
+        ExecutorService threadPool = null;
+        try {
+            // 优先创建JDK21的虚拟线程池
+            threadPool = getVirtualThreadPerTaskExecutor();
+        } catch (Exception e) {
+            // ignore
+        }
+        // JDK21以下版本，则创建一个不限制线程数量的线程池
+        if (threadPool == null) {
+            threadPool = Executors.newCachedThreadPool();
+        }
+        return threadPool;
+    }
+
+    /**
+     * 创建虚拟线程池
+     */
+    private static ExecutorService getVirtualThreadPerTaskExecutor() {
+        try {
+            // 创建虚拟线程池
+            // var threadPool = Executors.newVirtualThreadPerTaskExecutor();
+            Method method = Executors.class.getMethod("newVirtualThreadPerTaskExecutor");
+            return (ExecutorService) method.invoke(null);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
